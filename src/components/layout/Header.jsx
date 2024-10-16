@@ -1,10 +1,11 @@
-export default function Header() {
-  /* Website name and logo???
-    Button to open the navbar */
+import React from "react";
+import { School as SchoolIcon } from "@mui/icons-material";
 
+export default function Header() {
   return (
-    <div>
-      <h1>I am the header!</h1>
-    </div>
+    <header className="flex items-center bg-blue-300 p-4 w-full">
+      <SchoolIcon className="text-white mr-2" />
+      <h1 className="text-white text-xl font-bold">Canvas Clone Midterm</h1>
+    </header>
   );
 }

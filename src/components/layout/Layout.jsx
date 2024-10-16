@@ -5,12 +5,14 @@ import { Outlet } from "react-router-dom";
 
 export default function Layout() {
   return (
-    <div>
+    <div className="h-screen">
       <Header />
-      <Navbar />
-      <main>
-        <Outlet />
-      </main>
+      <div className="flex">
+        <Navbar />
+        <main className="p-4  w-screen">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }
