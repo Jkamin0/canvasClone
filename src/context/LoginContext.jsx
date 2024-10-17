@@ -9,6 +9,7 @@ export const LoginContext = createContext({
   login: () => {},
   logout: () => {},
   createUser: () => {},
+  updateUser: () => {},
 });
 
 export default function LoginContextProvider({ children }) {
@@ -83,19 +84,40 @@ export default function LoginContextProvider({ children }) {
       }
 
       const newUser = {
-        email: email,
+        email,
         password,
         isLoggedIn: false,
-        fullName: fullName,
-        major: major,
-        age: age,
-        isTeacher: isTeacher,
+        fullName,
+        major,
+        age,
+        isTeacher,
       };
 
       const newUserId = await userApi.create(newUser);
       const createdUser = await userApi.getById(newUserId);
 
       setUser(createdUser);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function updateUser(updatedData) {
+    if (!user) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const updatedUser = {
+        ...user,
+        ...updatedData,
+      };
+
+      await userApi.update(user.id, updatedUser);
+      setUser(updatedUser);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -111,6 +133,7 @@ export default function LoginContextProvider({ children }) {
     login: handleLogin,
     logout: handleLogout,
     createUser: handleCreateUser,
+    updateUser,
   };
 
   return (
