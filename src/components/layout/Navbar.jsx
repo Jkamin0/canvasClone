@@ -6,6 +6,7 @@ import {
   Article as PagesIcon,
   Lock as AuthenticateIcon,
   PersonAdd as CreateAccountIcon,
+  ViewModule as ModulesIcon,
 } from "@mui/icons-material";
 
 export default function Navbar() {
@@ -66,6 +67,15 @@ export default function Navbar() {
             >
               <PagesIcon className="mr-2" />
               All Pages
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/modules"
+              className="py-2 px-4 rounded hover:bg-gray-700 flex items-center"
+            >
+              <ModulesIcon className="mr-2" />
+              Modules
             </Link>
           </li>
         </ul>

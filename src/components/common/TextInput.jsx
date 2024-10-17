@@ -9,6 +9,7 @@ export default function TextInput({
   onChange,
   placeholder,
   required = false,
+  ...props
 }) {
   return (
     <TextField
@@ -21,6 +22,7 @@ export default function TextInput({
       variant="outlined"
       fullWidth
       margin="normal"
+      {...props}
     />
   );
 }
