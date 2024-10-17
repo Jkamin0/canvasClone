@@ -9,6 +9,7 @@ import GenericAnnouncement from "../../pages/PageTypes/GenericAnnouncement";
 import AllAnnouncements from "../../pages/PageTypes/AllAnnouncements";
 import Modules from "../../pages/PageTypes/Modules";
 import Layout from "./Layout";
+import HomePage from "../../pages/PageTypes/HomePage";
 import LoginContextProvider from "../../context/LoginContext";
 
 const AppRoutes = () => {
@@ -18,15 +19,18 @@ const AppRoutes = () => {
         <Routes>
           <Route path="/" element={<Layout />}>
             {/* Will need to fix */}
-            <Route path="/" element={<GenericPage />} />
+            <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/pages" element={<AllPages />} />
             {/* Will need to fix */}
-            <Route path="/announcement" element={<GenericAnnouncement />} />
             <Route path="/announcements" element={<AllAnnouncements />} />
             <Route path="/modules" element={<Modules />} />
+            <Route
+              path="/announcements/:id"
+              element={<GenericAnnouncement />}
+            />
           </Route>
         </Routes>
       </Router>
