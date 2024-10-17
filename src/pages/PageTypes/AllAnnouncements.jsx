@@ -5,12 +5,6 @@ import { LoginContext } from "../../context/LoginContext";
 import Modal from "@mui/material/Modal";
 import TextInput from "../../components/common/TextInput";
 import SubmitButton from "../../components/common/SubmitButton";
-/*
-TODO:
-Edit announcement after created
-View an individual announcement on click
-Delete announcement
-*/
 
 export default function AllAnnouncements() {
   const { user } = useContext(LoginContext);

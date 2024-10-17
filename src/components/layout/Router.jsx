@@ -10,6 +10,7 @@ import AllAnnouncements from "../../pages/PageTypes/AllAnnouncements";
 import Modules from "../../pages/PageTypes/Modules";
 import Layout from "./Layout";
 import HomePage from "../../pages/PageTypes/HomePage";
+import ProtectedRoute from "../common/ProtectedRoute";
 import LoginContextProvider from "../../context/LoginContext";
 
 const AppRoutes = () => {
@@ -18,18 +19,28 @@ const AppRoutes = () => {
       <Router>
         <Routes>
           <Route path="/" element={<Layout />}>
-            {/* Will need to fix */}
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/pages" element={<AllPages />} />
-            {/* Will need to fix */}
-            <Route path="/announcements" element={<AllAnnouncements />} />
-            <Route path="/modules" element={<Modules />} />
+            <Route
+              path="/profile"
+              element={<ProtectedRoute element={<ProfilePage />} />}
+            />
+            <Route
+              path="/pages"
+              element={<ProtectedRoute element={<AllPages />} />}
+            />
+            <Route
+              path="/announcements"
+              element={<ProtectedRoute element={<AllAnnouncements />} />}
+            />
+            <Route
+              path="/modules"
+              element={<ProtectedRoute element={<Modules />} />}
+            />
             <Route
               path="/announcements/:id"
-              element={<GenericAnnouncement />}
+              element={<ProtectedRoute element={<GenericAnnouncement />} />}
             />
           </Route>
         </Routes>
