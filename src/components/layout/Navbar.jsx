@@ -4,11 +4,13 @@ import {
   Person as PersonIcon,
   Notifications as AnnouncementsIcon,
   Article as PagesIcon,
+  Lock as AuthenticateIcon,
+  PersonAdd as CreateAccountIcon,
 } from "@mui/icons-material";
 
 export default function Navbar() {
   return (
-    <div className="h-screen w-64 bg-gray-800 text-white">
+    <div className="h-dvh w-56 bg-gray-800 text-white">
       <nav className="flex flex-col p-4 space-y-2">
         <ul className="space-y-2">
           <li>
@@ -18,6 +20,25 @@ export default function Navbar() {
             >
               <HomeIcon className="mr-2" />
               Home
+            </Link>
+          </li>
+
+          <li>
+            <Link
+              to="/login"
+              className="py-2 px-4 rounded hover:bg-gray-700 flex items-center"
+            >
+              <AuthenticateIcon className="mr-2" />
+              Authenticate
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/register"
+              className="py-2 px-4 rounded hover:bg-gray-700 flex items-center"
+            >
+              <CreateAccountIcon className="mr-2" />
+              Create Account
             </Link>
           </li>
           <li>
