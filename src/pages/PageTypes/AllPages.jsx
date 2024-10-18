@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useApi } from "../../api/apiV3";
+import { useNavigate } from "react-router-dom";
 import TextInput from "../../components/common/TextInput";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
@@ -15,11 +16,12 @@ export default function AllPages() {
     title: "",
     pageType: "home",
     content: "",
-    moduleId: "",
+    moduleId: "0", // Defaulting to "0"
   });
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const pagesApi = useApi("pages");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPages = async () => {
@@ -43,20 +45,20 @@ export default function AllPages() {
     setError(null);
 
     try {
-      if (!newPage.title || !newPage.content || !newPage.moduleId) {
+      if (!newPage.title || !newPage.content) {
         throw new Error("Please fill out all fields.");
       }
 
+      // Check if a "home" page already exists using the API
+      const existingHomePage = await pagesApi.getByField("pageType", "home");
+      if (newPage.pageType === "home" && existingHomePage) {
+        throw new Error(
+          "A 'home' page already exists. Please choose a different page type."
+        );
+      }
+
       await pagesApi.create(newPage);
-      alert("Page created successfully!");
-
-      setNewPage({
-        title: "",
-        pageType: "home",
-        content: "",
-        moduleId: "",
-      });
-
+      setNewPage({ title: "", pageType: "home", content: "", moduleId: "0" });
       const existingPages = await pagesApi.getAll();
       setPages(existingPages);
       setIsModalOpen(false);
@@ -67,6 +69,10 @@ export default function AllPages() {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+  };
+
+  const handlePageClick = (pageId) => {
+    navigate(`/pages/${pageId}`);
   };
 
   return (
@@ -82,7 +88,8 @@ export default function AllPages() {
         {pages.map((page) => (
           <div
             key={page.id}
-            className="bg-white shadow rounded-lg p-4 mb-4 w-full max-w-lg mx-auto"
+            className="bg-white shadow rounded-lg p-4 mb-4 w-full max-w-lg mx-auto cursor-pointer"
+            onClick={() => handlePageClick(page.id)}
           >
             <h5 className="text-xl font-bold">{page.title}</h5>
             <p className="text-gray-700">{page.content}</p>
@@ -93,6 +100,7 @@ export default function AllPages() {
       <Modal open={isModalOpen} onClose={handleCloseModal}>
         <div className="bg-white p-6 rounded shadow-md max-w-sm mx-auto mt-16">
           <h3 className="text-xl font-semibold mb-4">Create New Page</h3>
+          {error && <div className="text-red-500 mb-4">{error}</div>}
           <form onSubmit={handleSubmit}>
             <TextInput
               label="Title"
@@ -125,13 +133,6 @@ export default function AllPages() {
               required
               multiline
               rows={4}
-            />
-            <TextInput
-              label="Module ID"
-              name="moduleId"
-              value={newPage.moduleId}
-              onChange={handleInputChange}
-              required
             />
             <div className="flex space-x-4 mt-4">
               <Button type="submit" variant="contained" color="primary">

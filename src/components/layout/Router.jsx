@@ -42,6 +42,10 @@ const AppRoutes = () => {
               path="/announcements/:id"
               element={<ProtectedRoute element={<GenericAnnouncement />} />}
             />
+            <Route
+              path="/pages/:id"
+              element={<ProtectedRoute element={<GenericPage />} />}
+            />
           </Route>
         </Routes>
       </Router>
