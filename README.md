@@ -1,8 +1,18 @@
-# React + Vite
+# Canvas Clone Midterm
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Midterm for IS 5700, created by Jacob Smith
 
-Currently, two official plugins are available:
+## Requirements Report
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Hooks
+
+- PageLogic.jsx to handle all the logic needed when display all pages
+- PageTypes.jsx to handle all logic needed to initialize and create new page types for use
+
+### Context/Providers
+
+- LoginContext.jsx to handle user authentication throughout the App
+
+### Extra Credit:
+
+- Restrict to only allow one HomePage, will not allow for creation of a second one until the first has been reassigned to a new page type
