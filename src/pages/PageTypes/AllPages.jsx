@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useApi } from "../../api/apiV3";
-import { useNavigate } from "react-router-dom";
+import React from "react";
+import usePages from "../../hooks/UsePages";
 import TextInput from "../../components/common/TextInput";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
@@ -11,69 +10,17 @@ import InputLabel from "@mui/material/InputLabel";
 import SubmitButton from "../../components/common/SubmitButton";
 
 export default function AllPages() {
-  const [pages, setPages] = useState([]);
-  const [newPage, setNewPage] = useState({
-    title: "",
-    pageType: "home",
-    content: "",
-    moduleId: "0", // Defaulting to "0"
-  });
-  const [error, setError] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const pagesApi = useApi("pages");
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchPages = async () => {
-      const existingPages = await pagesApi.getAll();
-      setPages(existingPages);
-    };
-
-    fetchPages();
-  }, []);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewPage((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(null);
-
-    try {
-      if (!newPage.title || !newPage.content) {
-        throw new Error("Please fill out all fields.");
-      }
-
-      // Check if a "home" page already exists using the API
-      const existingHomePage = await pagesApi.getByField("pageType", "home");
-      if (newPage.pageType === "home" && existingHomePage) {
-        throw new Error(
-          "A 'home' page already exists. Please choose a different page type."
-        );
-      }
-
-      await pagesApi.create(newPage);
-      setNewPage({ title: "", pageType: "home", content: "", moduleId: "0" });
-      const existingPages = await pagesApi.getAll();
-      setPages(existingPages);
-      setIsModalOpen(false);
-    } catch (err) {
-      setError(err.message);
-    }
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
-
-  const handlePageClick = (pageId) => {
-    navigate(`/pages/${pageId}`);
-  };
+  const {
+    pages,
+    newPage,
+    error,
+    isModalOpen,
+    handleInputChange,
+    handleSubmit,
+    handleCloseModal,
+    handlePageClick,
+    setIsModalOpen,
+  } = usePages();
 
   return (
     <div className="max-w-2xl mx-auto mt-8">
