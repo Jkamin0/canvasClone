@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useApi } from "../api/apiV3";
 import { useNavigate } from "react-router-dom";
 
-export default function usePages() {
+export const PageLogic = (initialPageTypes) => {
   const [pages, setPages] = useState([]);
   const [newPage, setNewPage] = useState({
     title: "",
@@ -10,19 +10,18 @@ export default function usePages() {
     content: "",
     moduleId: "0",
   });
+  const [newPageType, setNewPageType] = useState("");
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isTypeModalOpen, setIsTypeModalOpen] = useState(false);
   const pagesApi = useApi("pages");
   const navigate = useNavigate();
+  const [pageTypes, addPageType] = initialPageTypes;
 
   useEffect(() => {
     const fetchPages = async () => {
-      try {
-        const existingPages = await pagesApi.getAll();
-        setPages(existingPages);
-      } catch (err) {
-        setError("Failed to load pages.");
-      }
+      const existingPages = await pagesApi.getAll();
+      setPages(existingPages);
     };
 
     fetchPages();
@@ -62,23 +61,39 @@ export default function usePages() {
     }
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
-
   const handlePageClick = (pageId) => {
     navigate(`/pages/${pageId}`);
   };
 
+  const handleAddPageType = () => {
+    if (newPageType && !pageTypes.includes(newPageType)) {
+      addPageType(newPageType);
+      setNewPageType("");
+      setIsTypeModalOpen(false);
+    }
+  };
+
+  const handleOpenModal = () => setIsModalOpen(true);
+  const handleCloseModal = () => setIsModalOpen(false);
+  const handleOpenTypeModal = () => setIsTypeModalOpen(true);
+  const handleCloseTypeModal = () => setIsTypeModalOpen(false);
+
   return {
     pages,
     newPage,
+    newPageType,
     error,
+    pageTypes,
     isModalOpen,
+    isTypeModalOpen,
     handleInputChange,
     handleSubmit,
-    handleCloseModal,
     handlePageClick,
-    setIsModalOpen,
+    handleAddPageType,
+    handleOpenModal,
+    handleCloseModal,
+    handleOpenTypeModal,
+    handleCloseTypeModal,
+    setNewPageType,
   };
-}
+};
