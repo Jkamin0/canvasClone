@@ -12,6 +12,7 @@ import {
 import { useApi } from "../../api/apiV3";
 import { LoginContext } from "../../context/LoginContext";
 import TextInput from "../../components/common/TextInput";
+import SubmitButton from "../../components/common/SubmitButton";
 
 const ModulesPage = () => {
   const modulesApi = useApi("modules");
@@ -23,6 +24,7 @@ const ModulesPage = () => {
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [currentModule, setCurrentModule] = useState(null);
   const [newModuleName, setNewModuleName] = useState("");
+  const [newOrderID, setNewOrderID] = useState("");
   const [assignedPages, setAssignedPages] = useState([]);
 
   // Fetch modules and pages
@@ -52,7 +54,7 @@ const ModulesPage = () => {
     await modulesApi.create({
       name: newModuleName,
       published: false,
-      orderID: modules.length + 1,
+      orderID: modules.length,
     });
     setNewModuleName("");
     setCreateModalOpen(false);
@@ -63,6 +65,7 @@ const ModulesPage = () => {
     setCurrentModule(module);
     setAssignedPages(pages.filter((page) => page.moduleId === module.id));
     setNewModuleName(module.name);
+    setNewOrderID(module.orderID);
     setEditModalOpen(true);
   };
 
@@ -74,10 +77,35 @@ const ModulesPage = () => {
     );
   };
 
+  const handleOrderChange = (e) => {
+    setNewOrderID(Number(e.target.value));
+  };
+
   const handleSaveChanges = async () => {
-    const updatedModule = { ...currentModule, name: newModuleName };
+    const updatedModule = {
+      ...currentModule,
+      name: newModuleName,
+      orderID: newOrderID,
+    };
+
+    // Adjust the orderIDs
+    const updatedModules = modules.map((mod) => {
+      if (mod.id === currentModule.id) return updatedModule;
+      if (mod.orderID >= newOrderID && mod.id !== currentModule.id) {
+        return { ...mod, orderID: mod.orderID + 1 };
+      }
+      return mod;
+    });
+
+    updatedModules.sort((a, b) => a.orderID - b.orderID);
+
     await modulesApi.update(currentModule.id, updatedModule);
 
+    await Promise.all(
+      updatedModules.map((mod) => modulesApi.update(mod.id, mod))
+    );
+
+    // Page assignments
     const updatedPages = pages.map((page) => {
       const isAssigned = assignedPages.some((p) => p.id === page.id);
       if (isAssigned) {
@@ -88,7 +116,6 @@ const ModulesPage = () => {
       return page;
     });
 
-    // Update all pages, wait for all to finish
     await Promise.all(
       updatedPages.map(async (page) => {
         await pagesApi.update(page.id, page);
@@ -115,25 +142,23 @@ const ModulesPage = () => {
   };
 
   return (
-    <div>
+    <div className="max-w-2xl mx-auto mt-8">
+      <h2 className="text-2xl font-bold mb-4">Modules</h2>
       {/* Create button */}
       {user?.isTeacher && (
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => setCreateModalOpen(true)}
-        >
+        <SubmitButton onClick={() => setCreateModalOpen(true)}>
           Create Module
-        </Button>
+        </SubmitButton>
       )}
 
       {modules
         .filter((module) => user?.isTeacher || module.published) // Only show published to students
+        .sort((a, b) => a.orderID - b.orderID) // Modules are displayed in order
         .map((module) => (
           <Accordion key={module.id}>
             <AccordionSummary>
               <Typography>{module.name}</Typography>
-              {/*Edit Button */}
+              {/* Edit Button */}
               {user?.isTeacher && (
                 <Button onClick={() => openEditModal(module)}>Edit</Button>
               )}
@@ -149,7 +174,7 @@ const ModulesPage = () => {
                   </div>
                 ))}
 
-              {/* Published checkbox*/}
+              {/* Published checkbox */}
               {user?.isTeacher && (
                 <FormControlLabel
                   control={
@@ -205,6 +230,13 @@ const ModulesPage = () => {
             label="Module Name"
             value={newModuleName}
             onChange={(e) => setNewModuleName(e.target.value)}
+            required
+          />
+          <TextInput
+            label="Order ID"
+            type="number"
+            value={newOrderID}
+            onChange={handleOrderChange}
             required
           />
           {pages.map((page) => (
