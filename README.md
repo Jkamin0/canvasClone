@@ -12,7 +12,8 @@ Midterm for IS 5700, created by Jacob Smith
 ### Context/Providers
 
 - LoginContext.jsx to handle user authentication throughout the App
+- NavbarContext.jsx to handle logic and persistent state after reload in the App
 
 ### Extra Credit:
 
-- Restrict to only allow one HomePage, will not allow for creation of a second one until the first has been reassigned to a new page type
+- Restrict to only allow one HomePage: Will not allow for creation of a second one until the first has been reassigned to a new page type

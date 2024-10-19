@@ -1,9 +1,9 @@
 import React from "react";
 import TextField from "@mui/material/TextField";
 
-export default function TextInput({
+export default function NumberInput({
   label,
-  type = "text",
+  type = "number",
   value,
   onChange,
   placeholder,
