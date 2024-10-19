@@ -78,7 +78,11 @@ export default function AllAnnouncements() {
   return (
     <div className="max-w-2xl mx-auto mt-8">
       <h2 className="text-2xl font-bold mb-4">Announcements</h2>
-      <SubmitButton onClick={handleOpenModal}>Create Announcement</SubmitButton>
+      {user && user.isTeacher && (
+        <SubmitButton onClick={handleOpenModal}>
+          Create Announcement
+        </SubmitButton>
+      )}
       <ul>
         {announcements.toReversed().map((announcement) => (
           <li

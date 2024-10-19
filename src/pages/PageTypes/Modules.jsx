@@ -54,10 +54,6 @@ const ModulesPage = () => {
           <Accordion key={module.id}>
             <AccordionSummary>
               <Typography>{module.name}</Typography>
-              {/* Edit Button */}
-              {user?.isTeacher && (
-                <Button onClick={() => openEditModal(module)}>Edit</Button>
-              )}
             </AccordionSummary>
             <AccordionDetails>
               {pages
@@ -70,6 +66,22 @@ const ModulesPage = () => {
                   </div>
                 ))}
 
+              {/* Edit Button */}
+              {user?.isTeacher && (
+                <Button onClick={() => openEditModal(module)}>Edit</Button>
+              )}
+
+              {/* Delete button for teachers */}
+              {user?.isTeacher && (
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  onClick={() => handleDeleteModule(module.id)}
+                >
+                  Delete Module
+                </Button>
+              )}
+
               {/* Published checkbox */}
               {user?.isTeacher && (
                 <FormControlLabel
@@ -81,16 +93,6 @@ const ModulesPage = () => {
                   }
                   label="Published"
                 />
-              )}
-              {/* Delete button for teachers */}
-              {user?.isTeacher && (
-                <Button
-                  variant="outlined"
-                  color="secondary"
-                  onClick={() => handleDeleteModule(module.id)}
-                >
-                  Delete Module
-                </Button>
               )}
             </AccordionDetails>
           </Accordion>
