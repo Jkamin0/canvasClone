@@ -14,7 +14,7 @@ const useModules = () => {
   const [newModuleName, setNewModuleName] = useState("");
   const [newOrderID, setNewOrderID] = useState("");
   const [assignedPages, setAssignedPages] = useState([]);
-  const [errorMessage, setErrorMessage] = useState(""); // State for error message
+  const [errorMessage, setErrorMessage] = useState("");
 
   // Fetch modules and pages
   useEffect(() => {
@@ -60,11 +60,18 @@ const useModules = () => {
   };
 
   const handlePageChange = (pageId) => {
-    setAssignedPages((prev) =>
-      prev.some((page) => page.id === pageId)
-        ? prev.filter((page) => page.id !== pageId)
-        : [...prev, pages.find((page) => page.id === pageId)]
-    );
+    setAssignedPages((prevAssignedPages) => {
+      const isPageAssigned = prevAssignedPages.some(
+        (page) => page.id === pageId
+      );
+
+      if (isPageAssigned) {
+        return prevAssignedPages.filter((page) => page.id !== pageId);
+      } else {
+        const pageToAdd = pages.find((page) => page.id === pageId);
+        return [...prevAssignedPages, pageToAdd];
+      }
+    });
   };
 
   const handleOrderChange = (e) => {
@@ -78,41 +85,36 @@ const useModules = () => {
       orderID: newOrderID,
     };
 
-    // Adjust the orderIDs
-    const updatedModules = modules.map((mod) => {
-      if (mod.id === currentModule.id) return updatedModule;
-      if (mod.orderID >= newOrderID && mod.id !== currentModule.id) {
-        return { ...mod, orderID: mod.orderID + 1 };
-      }
-      return mod;
+    const updatedModules = modules
+      .map((mod) =>
+        mod.id === currentModule.id
+          ? updatedModule
+          : mod.orderID >= newOrderID
+          ? { ...mod, orderID: mod.orderID + 1 }
+          : mod
+      )
+      .sort((a, b) => a.orderID - b.orderID);
+
+    const updateModules = [
+      modulesApi.update(currentModule.id, updatedModule),
+      ...updatedModules.map((mod) => modulesApi.update(mod.id, mod)),
+    ];
+
+    const updatePages = pages.map((page) => {
+      const isPageAssigned = assignedPages.some((p) => p.id === page.id);
+      const moduleId = isPageAssigned
+        ? currentModule.id
+        : page.moduleId === currentModule.id
+        ? 0
+        : page.moduleId;
+
+      return pagesApi.update(page.id, { ...page, moduleId });
     });
 
-    updatedModules.sort((a, b) => a.orderID - b.orderID);
+    // Perform all updates
+    await Promise.all([...updateModules, ...updatePages]);
 
-    await modulesApi.update(currentModule.id, updatedModule);
-
-    await Promise.all(
-      updatedModules.map((mod) => modulesApi.update(mod.id, mod))
-    );
-
-    // Page assignments
-    const updatedPages = pages.map((page) => {
-      const isAssigned = assignedPages.some((p) => p.id === page.id);
-      if (isAssigned) {
-        return { ...page, moduleId: currentModule.id };
-      } else if (page.moduleId === currentModule.id) {
-        return { ...page, moduleId: 0 };
-      }
-      return page;
-    });
-
-    await Promise.all(
-      updatedPages.map(async (page) => {
-        await pagesApi.update(page.id, page);
-      })
-    );
-
-    setPages(updatedPages);
+    setPages(await pagesApi.getAll());
     setModules(await modulesApi.getAll());
     setEditModalOpen(false);
   };
